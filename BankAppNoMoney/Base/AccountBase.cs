@@ -7,15 +7,22 @@ namespace BankAppNoMoney.Base;
 internal abstract class AccountBase
 {
     internal Guid Id { get; set; } = Guid.NewGuid();
-    internal decimal StartingBalance { get; set; } = 500;
     internal string AccountName { get; set; } = "";
     internal string AccountNumber { get; set; } = "";
-    internal decimal InterestRate { get; set; } = 0;
+    public decimal InterestRate { get; protected set; }
 
-    public AccountBase(string accountName, string accountNumber)
+    protected AccountBase(decimal interestRate, decimal startingBalance,
+                      string accountName, string accountNumber)
     {
+        InterestRate = interestRate;
         AccountName = accountName;
         AccountNumber = accountNumber;
+
+        BankTransactions.Add(new BankTransaction
+        {
+            Amount = startingBalance,
+            TransactionalDate = DateTime.Now
+        });
     }
 
     protected List<BankTransaction> BankTransactions = new List<BankTransaction>();
@@ -26,7 +33,7 @@ internal abstract class AccountBase
     {
         if (amount <= 0)
         {
-            Console.WriteLine("Transaction can't be completed, amount cant be 0 or less.");
+            Console.WriteLine("Transaktionen kunde inte slutföras, belopp får inte vara 0 eller mindre");
         }
         else
         {
@@ -40,28 +47,64 @@ internal abstract class AccountBase
         }
     }
 
-    internal virtual bool Withdraw(decimal amount, bool transactionWork)
+    internal virtual bool Withdraw(decimal amount)
     {
-
+        if (amount <= 0)
+        {
+            Console.WriteLine();
+            Console.WriteLine("Beloppet måste vara större än noll.");
+            Console.WriteLine();
+            return false;
+        }
+        
         if (amount > Balance())
         {
             Console.WriteLine();
-            Console.WriteLine("Transaction can't be completed, balance is too low.");
+            Console.WriteLine("Transaktionen kunde inte slutföras, kontosaldot är för lågt.");
             Console.WriteLine();
+            return false;
         }
-        else
+        
+        var t = new BankTransaction
         {
-            var t = new BankTransaction
+            Amount = -amount,
+            TransactionalDate = DateTime.Now
+        };
+
+        BankTransactions.Add(t);
+        return true;
+
+    }
+
+    internal void SimulateYear(decimal depositAmount, int numberOfDeposits)
+    {
+        decimal dailyInterestRate = InterestRate / 365m;
+        int depositInterval = 365 / numberOfDeposits;
+
+        DateTime startDate = DateTime.Now;
+
+        for (int day = 1; day <= 365; day++)
+        {
+            decimal currentBalance = Balance();
+            decimal interestForTheDay = currentBalance * dailyInterestRate;
+
+            if (interestForTheDay > 0)
             {
-                Amount = -amount,
-                TransactionalDate = DateTime.Now
-            };
+                BankTransactions.Add(new BankTransaction
+                {
+                    Amount = interestForTheDay,
+                    TransactionalDate = startDate.AddDays(day)
+                });
+            }
 
-            BankTransactions.Add(t);
-            transactionWork = true;
+            if (day % depositInterval == 0)
+            {
+                BankTransactions.Add(new BankTransaction
+                {
+                    Amount = depositAmount,
+                    TransactionalDate = startDate.AddDays(day)
+                });
+            }
         }
-
-        return transactionWork;
-
     }
 }

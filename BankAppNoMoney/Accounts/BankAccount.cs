@@ -7,13 +7,16 @@ namespace BankAppNoMoney.Accounts;
 
 internal class BankAccount : AccountBase
 {
-    public BankAccount(string accountName, string accountNumber) : base(accountName, accountNumber)
+    public BankAccount(string accountName, string accountNumber) : base(0.01m, 500m, accountName, accountNumber)
     {
     }
 
     internal override decimal Balance()
     {
-        var t =BankTransactions.Sum(x => x.Amount);
-        return StartingBalance + t;
+        // GAMLA KODEN, INTE RADERAD FÖR ATT VISA VAD SOM ÄNDRATS
+        //var t =BankTransactions.Sum(x => x.Amount);
+        //return StartingBalance + t;
+
+        return BankTransactions.Sum(x => x.Amount);
     }
 }
