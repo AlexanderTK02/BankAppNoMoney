@@ -76,10 +76,11 @@ internal abstract class AccountBase
 
     }
 
+                // Metod för att simulera ett år av ränta och insättningar
     internal void SimulateYear(decimal depositAmount, int numberOfDeposits)
     {
-        decimal dailyInterestRate = InterestRate / 365m;
-        int depositInterval = 365 / numberOfDeposits;
+        decimal dailyInterestRate = InterestRate / 365m;  // Tar årsräntan och delar den på 365 för att få daglig ränta
+        int depositInterval = 365 / numberOfDeposits;   // Beräknar hur ofta insättningarna ska göras under året
 
         DateTime startDate = DateTime.Now;
 

@@ -6,7 +6,7 @@ using BankAppNoMoney.Base;
 namespace BankAppNoMoney.Accounts;
 
 internal class BankAccount : AccountBase
-{
+{                                                                 // Siffrorna nedan är:  Ränta och startbelopp 
     public BankAccount(string accountName, string accountNumber) : base(0.01m, 500m, accountName, accountNumber)
     {
     }

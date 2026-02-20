@@ -6,8 +6,8 @@ using BankAppNoMoney.Base;
 namespace BankAppNoMoney.Accounts;
 
 internal class IskAccount : AccountBase
-{
-    public IskAccount(string accountName, string accountNumber) : base(0.5m, 500m, accountName, accountNumber)
+{                                                                 // Siffrorna nedan är:  Ränta och startbelopp 
+    public IskAccount(string accountName, string accountNumber) : base(0.05m, 500m, accountName, accountNumber)
     {
     }
 

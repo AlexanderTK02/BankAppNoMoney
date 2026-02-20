@@ -2,6 +2,7 @@
 using BankAppNoMoney.Base;
 using System;
 using System.Collections.Generic;
+using System.Security.Principal;
 using System.Text;
 
 namespace BankAppNoMoney;
@@ -12,7 +13,7 @@ internal class Bank
 
     public Bank()
     {
-        SeedAccounts();
+        SeedAccounts(); // Skapar konton med slumpmässiga startbelopp när banken initieras
     }
 
     private void SeedAccounts()
@@ -34,25 +35,25 @@ internal class Bank
 
         var random = new Random();
 
-        foreach (var acc in accountsToSeed)
+        foreach (var acc in accountsToSeed) // Loopar igenom varje konto i listan och sätter in ett slumpmässigt belopp.
         {
             acc.Deposit(random.Next(500, 10000));
             Accounts.Add(acc);
         }
     }
 
-    public void ShowBankMenu()
+    public void ShowBankMenu() // Huvudmenyn som visas när programmet startar
     {
         while (true)
         {
 
         DramaticEffectLine("Välkommen till Svensk Bank!", 5);
         Console.WriteLine();
-        DramaticEffectLine("1. Skapa konto", 5);
-        DramaticEffectLine("2. Ta bort konto", 5);
-        DramaticEffectLine("3. Visa alla konton", 5);
-        DramaticEffectLine("4. Hantera konton", 5);
-        DramaticEffectLine("5. Avsluta", 5);
+        DramaticEffectLine("1. Skapa konto", 5);      // Menyalternativ för att skapa ett nytt konto
+        DramaticEffectLine("2. Ta bort konto", 5);    // Menyalternativ för att ta bort ett befintligt konto
+        DramaticEffectLine("3. Visa alla konton", 5); // Menyalternativ för att visa en lista över alla konton i banken
+        DramaticEffectLine("4. Hantera konton", 5);   // Menyalternativ för att hantera ett specifikt konto
+        DramaticEffectLine("5. Avsluta", 5);          // Menyalternativ för att avsluta programmet
 
         char keyPress = Console.ReadKey(true).KeyChar;
 
@@ -75,14 +76,10 @@ internal class Bank
                 HandleAccounts();
                 break;
             case '5':
-                Environment.Exit(0);
+                Environment.Exit(0); // kod som avslutar programmet
                 break;
             default:
-                Console.Clear();
-                Console.WriteLine("Ogiltigt val, försök igen.");
-                Console.WriteLine("Tryck på någon knapp för att fortsätta");
-                Console.ReadKey(true);
-                Console.Clear();
+                WrongInput("Ogiltigt val, försök igen."); // Egen metod som innehåller felmeddelande, kodrad = 384
                 ShowBankMenu();
                 break;
             }
@@ -95,15 +92,30 @@ internal class Bank
         Console.WriteLine();
         DramaticEffectLine("Vilken typ av konto vill du skapa?", 2);
         Console.WriteLine();
-        DramaticEffectLine("1. BankAccount", 2);
-        DramaticEffectLine("2. IskAccount", 2);
-        DramaticEffectLine("3. UddevallaAccount", 2);
+        DramaticEffectLine("1. BankAccount", 2);       // Ränta = 1%
+        DramaticEffectLine("2. IskAccount", 2);        // Ränta = 5%
+        DramaticEffectLine("3. UddevallaAccount", 2);  // Ränta = 3%
         Console.WriteLine();
 
-        string accountType = Console.ReadLine()!;
+        char chosenTypeAcc = Console.ReadKey(true).KeyChar;
         Console.WriteLine();
-        if (accountType == "1" || accountType == "2" || accountType == "3")
+        
+        if (chosenTypeAcc == '1' || chosenTypeAcc == '2' || chosenTypeAcc == '3')
         {
+            if (chosenTypeAcc == '1')
+            {
+                DramaticEffectLine("Kontotyp: BankAccount", 2);
+            }
+            else if (chosenTypeAcc == '2')
+            {
+                DramaticEffectLine("Kontotyp: IskAccount", 2);
+            }
+            else if (chosenTypeAcc == '3')
+            {
+                DramaticEffectLine("Kontotyp: UddevallaAccount", 2);
+            }
+
+            Console.WriteLine();
             Console.Write("Konto Namn: ");
             string accountName = Console.ReadLine()!;
             Console.WriteLine();
@@ -113,46 +125,42 @@ internal class Bank
             Console.WriteLine();
 
             AccountBase newAccount;
+            string accountTypeTemp;
 
-            switch (accountType)
+            switch (chosenTypeAcc) // En switch som har sparat vald kontotyp som variabel och
+                                   // skapar konto baserat på valet efter att info har fyllts i.
             {
-                case "1":
+                case '1':
                     newAccount = new BankAccount(accountName, accountNumber);
+                    accountTypeTemp = "BankAccount";
                     break;
-                case "2":
+                case '2':
                     newAccount = new IskAccount(accountName, accountNumber);
+                    accountTypeTemp = "IskAccount";
                     break;
-                case "3":
+                case '3':
                     newAccount = new UddevallaAccount(accountName, accountNumber);
+                    accountTypeTemp = "UddevallaAccount";
                     break;
                 default:
-                    Console.Clear();
-                    DramaticEffectLine("Svensk Bank", 2);
-                    Console.WriteLine();
-                    DramaticEffectLine("Något gick fel, vänligen försök igen.", 2);
-                    Console.WriteLine();
-                    DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-                    Console.ReadKey(true);
-                    Console.Clear();
+                    WrongInput("Något gick fel, vänligen försök igen.");
                     CreateAccount();
                     return;
             }
 
             AddAccount(newAccount);
-            Console.WriteLine($"Kontot har skapats: {accountName} - {accountNumber}");
+
+            DramaticEffectLine("Kontot har skapats!", 2);
+            Console.WriteLine();
+            DramaticEffectLine($" Konto Typ: {accountTypeTemp}", 2);
+            DramaticEffectLine($" Konto Namn: {accountName}", 2);
+            DramaticEffectLine($" Konto Nummer: {accountNumber}", 2);
             Thread.Sleep(2000);
             Console.Clear();
         }
         else
         {
-            Console.Clear();
-            DramaticEffectLine("Svensk Bank", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Ogiltigt val, försök igen.", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-            Console.ReadKey(true);
-            Console.Clear();
+            WrongInput("Ogiltigt val, försök igen.");
             CreateAccount();
             return;
         }
@@ -163,13 +171,7 @@ internal class Bank
     {
         if (Accounts.Count == 0)
         {
-            DramaticEffectLine("Svensk Bank", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Inga konton att ta bort.", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-            Console.ReadKey(true);
-            Console.Clear();
+            WrongInput("Inga konton att ta bort.");
             return;
         }
 
@@ -187,14 +189,7 @@ internal class Bank
             || choice < 1
             || choice > Accounts.Count)
         {
-            Console.Clear();
-            DramaticEffectLine("Svensk Bank", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Ogiltigt val.", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-            Console.ReadKey(true);
-            Console.Clear();
+            WrongInput("Ogiltigt val.");
             return;
         }
 
@@ -240,13 +235,7 @@ internal class Bank
     {
         if (Accounts.Count == 0)
         {
-            DramaticEffectLine("Svensk Bank", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Inga konton att hantera.", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-            Console.ReadKey(true);
-            Console.Clear();
+            WrongInput("Inga konton att hantera.");
             return;
         }
 
@@ -263,14 +252,7 @@ internal class Bank
         Console.WriteLine();
         if (!int.TryParse(Console.ReadLine(), out int accountIndex) || accountIndex < 1 || accountIndex > Accounts.Count)
         {
-            Console.Clear();
-            DramaticEffectLine("Svensk Bank", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Ogiltigt val, försök igen.", 2);
-            Console.WriteLine();
-            DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-            Console.ReadKey(true);
-            Console.Clear();
+            WrongInput("Något gick fel");
             return;
         }
 
@@ -343,18 +325,39 @@ internal class Bank
                     DramaticEffectLine("Svensk Bank", 2);
                     Console.WriteLine();
 
-                    Console.Write("Ange belopp för insättning: ");
+                    Console.Write("Ange belopp för insättning under året: ");
                     decimal simDeposit = decimal.TryParse(Console.ReadLine(), out decimal tempDeposit) ? tempDeposit : 0m;
                     Console.WriteLine();
 
                     Console.Write("Ange antal gånger beloppet ska sättas in under simuleringen: ");
                     int simTimes = int.TryParse(Console.ReadLine(), out int tempDeposits) ? tempDeposits : 0;
-                    Console.Clear();
 
+                    Console.Clear();
+                    if (simTimes <= 0)
+                    {
+                        DramaticEffectLine("Svensk Bank", 2);
+                        Console.WriteLine();
+                        DramaticEffectLine("Antal får inte vara 0 eller under.", 2);
+                        Console.WriteLine();
+                        break;
+                    }
+                    if (simTimes > 365)
+                    {
+                        DramaticEffectLine("Svensk Bank", 2);
+                        Console.WriteLine();
+                        DramaticEffectLine("Antal får inte vara över 365.", 2);
+                        Console.WriteLine();
+                        break;
+                    }
+
+                    decimal tempBalance = selectedAccount.Balance();
+                    
                     selectedAccount.SimulateYear(simDeposit, simTimes);
                     DramaticEffectLine("Svensk Bank", 2);
                     Console.WriteLine();
                     DramaticEffectLine("Ett år har simulerats!",2);
+                    Console.WriteLine();
+                    DramaticEffectLine($"Start Saldo: {Math.Round(tempBalance, 2)} kr", 2);
                     Console.WriteLine();
                     DramaticEffectLine($"Uppdaterad Saldo: {Math.Round(selectedAccount.Balance(), 2)} kr", 2);
                     Console.WriteLine();
@@ -398,7 +401,34 @@ internal class Bank
         return Accounts;
     }
 
-    static void DramaticEffectLine(string text, int delay)  // Writes text with a dramatic effect
+    /// <summary>
+    /// Displays a message to the user with a dramatic effect, indicating an incorrect input, and prompts the user to
+    /// continue.
+    /// </summary>
+    /// <remarks>This method clears the console, presents the specified message with a dramatic effect, and
+    /// waits for the user to press a key before clearing the console again. Intended for use when notifying the user of
+    /// invalid or unexpected input.</remarks>
+    /// <param name="textInput">The message to display to the user regarding the incorrect input.</param>
+    internal void WrongInput(string textInput)
+    {
+        Console.Clear();
+        DramaticEffectLine("Svensk Bank", 2);
+        Console.WriteLine();
+        DramaticEffectLine(textInput, 2);
+        Console.WriteLine();
+        DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
+        Console.ReadKey(true);
+        Console.Clear();
+    }
+
+    /// <summary>
+    /// Console.WriteLine with a dramatic effect by printing each character with a delay in between.
+    /// </summary>
+    /// <remarks>This method iterates through each character in the provided string, printing it to the console with a specified delay between characters. 
+    /// After printing the entire string, it moves to a new line. This is intended to create a dramatic effect when displaying messages to the user.</remarks>
+    /// <param name="text">The string to send into the method and produce a dramatic effect.</param>
+    /// <param name="delay">Delay in milliseconds between each char in the string.</param>
+    static void DramaticEffectLine(string text, int delay)
     {
         foreach (char c in text)
         {
