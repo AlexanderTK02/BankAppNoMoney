@@ -374,8 +374,10 @@ internal class Bank
 
                     foreach (var tA in transaktioner)
                     {
+                        Console.WriteLine();
                         Console.WriteLine($"{tA.TransactionalDate:yy-MM-dd} - {Math.Round(tA.Amount, 2)} kr");
                         Console.WriteLine();
+                        Console.WriteLine("------------------------------------------------------------------------------");
                         Thread.Sleep(10);
                     }
                     DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
