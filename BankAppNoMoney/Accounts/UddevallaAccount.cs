@@ -19,4 +19,7 @@ internal class UddevallaAccount : AccountBase
 
         return BankTransactions.Sum(x => x.Amount);
     }
+
+
+
 }

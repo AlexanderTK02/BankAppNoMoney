@@ -270,7 +270,8 @@ internal class Bank
             DramaticEffectLine("2. Ta ut pengar", 2);
             DramaticEffectLine("3. Visa saldo", 2);
             DramaticEffectLine("4. Simulera 1 års ränta", 2);
-            DramaticEffectLine("5. Tillbaka till huvudmenyn", 2);
+            DramaticEffectLine("5. Visa transaktioner", 2);
+            DramaticEffectLine("6. Tillbaka till huvudmenyn", 2);
 
             char chosenOption = Console.ReadKey(true).KeyChar;
             Console.Clear();
@@ -364,6 +365,24 @@ internal class Bank
                     break;
 
                 case '5':
+                    DramaticEffectLine("Svensk Bank", 2);
+                    Console.WriteLine();
+                    DramaticEffectLine("Transaktioner:", 2);
+
+                    var transaktioner = selectedAccount.GetBankTransactions();
+                    Console.WriteLine();
+
+                    foreach (var tA in transaktioner)
+                    {
+                        Console.WriteLine($"{tA.TransactionalDate:yy-MM-dd} - {Math.Round(tA.Amount, 2)} kr");
+                        Console.WriteLine();
+                        Thread.Sleep(10);
+                    }
+                    DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
+                    Console.ReadKey(true);
+                    break;
+
+                case '6':
                     exitAccountMenu = true;
                     break;
             }

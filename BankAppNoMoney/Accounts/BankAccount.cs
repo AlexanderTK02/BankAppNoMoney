@@ -19,4 +19,6 @@ internal class BankAccount : AccountBase
 
         return BankTransactions.Sum(x => x.Amount);
     }
+
+
 }

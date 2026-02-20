@@ -19,4 +19,5 @@ internal class IskAccount : AccountBase
 
         return BankTransactions.Sum(x => x.Amount);
     }
+
 }

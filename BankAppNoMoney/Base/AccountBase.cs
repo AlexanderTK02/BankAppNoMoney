@@ -27,7 +27,14 @@ internal abstract class AccountBase
 
     protected List<BankTransaction> BankTransactions = new List<BankTransaction>();
 
+    public IEnumerable<BankTransaction> GetBankTransactions()
+    {
+        return BankTransactions;
+    }
+
     internal abstract decimal Balance();
+
+    //internal abstract List<BankTransaction> GetBankTransactions();
 
     internal virtual void Deposit(decimal amount)
     {
@@ -87,8 +94,11 @@ internal abstract class AccountBase
         for (int day = 1; day <= 365; day++)
         {
             decimal currentBalance = Balance();
+
+            // Beräknar räntan för den aktuella dagen baserat på det nuvarande saldot.
             decimal interestForTheDay = currentBalance * dailyInterestRate;
 
+            // Lägger till räntan som en transaktion om den är större än 0
             if (interestForTheDay > 0)
             {
                 BankTransactions.Add(new BankTransaction
