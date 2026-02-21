@@ -27,7 +27,14 @@ internal abstract class AccountBase
 
     protected List<BankTransaction> BankTransactions = new List<BankTransaction>();
 
+    public IEnumerable<BankTransaction> GetBankTransactions()
+    {
+        return BankTransactions;
+    }
+
     internal abstract decimal Balance();
+
+    //internal abstract List<BankTransaction> GetBankTransactions();
 
     internal virtual void Deposit(decimal amount)
     {
@@ -76,18 +83,22 @@ internal abstract class AccountBase
 
     }
 
+                // Metod för att simulera ett år av ränta och insättningar
     internal void SimulateYear(decimal depositAmount, int numberOfDeposits)
     {
-        decimal dailyInterestRate = InterestRate / 365m;
-        int depositInterval = 365 / numberOfDeposits;
+        decimal dailyInterestRate = InterestRate / 365m;  // Tar årsräntan och delar den på 365 för att få daglig ränta
+        int depositInterval = 365 / numberOfDeposits;   // Beräknar hur ofta insättningarna ska göras under året
 
         DateTime startDate = DateTime.Now;
 
         for (int day = 1; day <= 365; day++)
         {
             decimal currentBalance = Balance();
+
+            // Beräknar räntan för den aktuella dagen baserat på det nuvarande saldot.
             decimal interestForTheDay = currentBalance * dailyInterestRate;
 
+            // Lägger till räntan som en transaktion om den är större än 0
             if (interestForTheDay > 0)
             {
                 BankTransactions.Add(new BankTransaction
