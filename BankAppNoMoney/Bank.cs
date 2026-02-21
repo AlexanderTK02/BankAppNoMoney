@@ -1,13 +1,18 @@
 ﻿using BankAppNoMoney.Accounts;
 using BankAppNoMoney.Base;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BankAppNoMoney;
 
 internal class Bank
 {
+    /*Känns jättemycket och jättemånga rader i en och samma klass, hade kanske varit bättre att separera de till olika klasser*/
+    /*Hade varit bättre om man tryckte på enter eller någon bokstav under tiden texten skrivs ut med delay inte räknades med, utan bara när hela texten hade skrivits ut. borde finnas någon liknande funktion.*/
+    /*Vissa text som tex när man vill se alla konton, det ser jättefin ut att texten rad för rad skrivs ut automatiskt men i vissa fall tar det för långt att sitta och vänta tills texten skrivs ut.*/
+
+    /*DramaticEffectLine($"{depositAmount} kr har lagts in i kontot.", 2);*/ /*Detta skrivs ut oavsett, även fast ett nummer är ett minus-siffra*/
+    /*Konton skapas äen fast man bara skriver Enter, hur du tänkt något specifikt där?*/
+    /**/
+
     internal List<AccountBase> Accounts { get; set; } = new List<AccountBase>();
 
     public Bank()
@@ -46,45 +51,45 @@ internal class Bank
         while (true)
         {
 
-        DramaticEffectLine("Välkommen till Svensk Bank!", 5);
-        Console.WriteLine();
-        DramaticEffectLine("1. Skapa konto", 5);
-        DramaticEffectLine("2. Ta bort konto", 5);
-        DramaticEffectLine("3. Visa alla konton", 5);
-        DramaticEffectLine("4. Hantera konton", 5);
-        DramaticEffectLine("5. Avsluta", 5);
+            DramaticEffectLine("Välkommen till Svensk Bank!", 5);
+            Console.WriteLine();
+            DramaticEffectLine("1. Skapa konto", 5);
+            DramaticEffectLine("2. Ta bort konto", 5);
+            DramaticEffectLine("3. Visa alla konton", 5);
+            DramaticEffectLine("4. Hantera konton", 5);
+            DramaticEffectLine("5. Avsluta", 5);
 
-        char keyPress = Console.ReadKey(true).KeyChar;
+            char keyPress = Console.ReadKey(true).KeyChar;
 
-        switch (keyPress)
+            switch (keyPress)
             {
-            case '1':
-                Console.Clear();
-                CreateAccount();
-                break;
-            case '2':
-                Console.Clear();
-                RemoveAccount();
-                break;
-            case '3':
-                Console.Clear();
-                ShowAllAccounts();
-                break;
-            case '4':
-                Console.Clear();
-                HandleAccounts();
-                break;
-            case '5':
-                Environment.Exit(0);
-                break;
-            default:
-                Console.Clear();
-                Console.WriteLine("Ogiltigt val, försök igen.");
-                Console.WriteLine("Tryck på någon knapp för att fortsätta");
-                Console.ReadKey(true);
-                Console.Clear();
-                ShowBankMenu();
-                break;
+                case '1':
+                    Console.Clear();
+                    CreateAccount();
+                    break;
+                case '2':
+                    Console.Clear();
+                    RemoveAccount();
+                    break;
+                case '3':
+                    Console.Clear();
+                    ShowAllAccounts();
+                    break;
+                case '4':
+                    Console.Clear();
+                    HandleAccounts();
+                    break;
+                case '5':
+                    Environment.Exit(0);
+                    break;
+                default:
+                    Console.Clear();
+                    Console.WriteLine("Ogiltigt val, försök igen.");
+                    Console.WriteLine("Tryck på någon knapp för att fortsätta");
+                    Console.ReadKey(true);
+                    Console.Clear();
+                    ShowBankMenu();
+                    break;
             }
         }
     }
@@ -354,7 +359,7 @@ internal class Bank
                     selectedAccount.SimulateYear(simDeposit, simTimes);
                     DramaticEffectLine("Svensk Bank", 2);
                     Console.WriteLine();
-                    DramaticEffectLine("Ett år har simulerats!",2);
+                    DramaticEffectLine("Ett år har simulerats!", 2);
                     Console.WriteLine();
                     DramaticEffectLine($"Uppdaterad Saldo: {Math.Round(selectedAccount.Balance(), 2)} kr", 2);
                     Console.WriteLine();
@@ -371,9 +376,9 @@ internal class Bank
             }
             else
             {
-            DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
-            Console.ReadKey(true);
-            Console.Clear();
+                DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
+                Console.ReadKey(true);
+                Console.Clear();
             }
         }
     }
