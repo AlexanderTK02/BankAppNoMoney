@@ -6,6 +6,29 @@ using System.Security.Principal;
 using System.Text;
 
 namespace BankAppNoMoney;
+/*
+ Farzad code-review
+ ShowBankMenu() finns redan en evighetsloop, så att anropa metoden igen känns kanske onödigt
+
+I CreateAccount() körs metoden om vid felaktig input, en loop hade nog räckt
+
+Villkoren i HandleAccounts() verkar bara kolla upp till val 4, men menyn har fler alternativ
+
+Thread.Sleep() används, värt att dubbelkolla att rätt namespace är med
+
+Blandning av ReadKey och ReadLine gör input-flödet lite ojämnt
+
+GetAccount() heter i singular men returnerar flera konton, kan vara lite missvisande
+
+Settern på Accounts är öppen, listan kan kanske ändras oavsiktligt
+
+I årssimuleringen hamnar ogiltig input direkt i logiken
+
+Random skapas i metoden, osäker om det är bästa stället
+
+Simuleringen ändrar faktiskt saldot, beror på hur man tänkt att funktionen ska funka
+
+ */
 
 internal class Bank
 {
