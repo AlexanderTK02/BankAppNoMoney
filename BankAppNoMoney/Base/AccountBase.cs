@@ -44,13 +44,13 @@ internal abstract class AccountBase
         }
         else
         {
-            var t = new BankTransaction
+            var transaction = new BankTransaction
             {
                 Amount = amount,
                 TransactionalDate = DateTime.Now
             };
 
-        BankTransactions.Add(t);
+        BankTransactions.Add(transaction);
         }
     }
 
@@ -72,13 +72,13 @@ internal abstract class AccountBase
             return false;
         }
         
-        var t = new BankTransaction
+        var transaction = new BankTransaction
         {
             Amount = -amount,
             TransactionalDate = DateTime.Now
         };
 
-        BankTransactions.Add(t);
+        BankTransactions.Add(transaction);
         return true;
 
     }

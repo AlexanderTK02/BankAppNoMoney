@@ -348,9 +348,7 @@ internal class Bank
                     Console.Write("Ange belopp att sätta in:");
                     Console.WriteLine();
 
-                    Decimal.TryParse(Console.ReadLine(), out decimal depositAmount);
-
-                    if (depositAmount > 0)
+                    if ((Decimal.TryParse(Console.ReadLine(), out decimal depositAmount)) || depositAmount > 0 )
                     {
                         selectedAccount.Deposit(depositAmount);
                         Console.WriteLine();
@@ -517,7 +515,7 @@ internal class Bank
     /// waits for the user to press a key before clearing the console again. Intended for use when notifying the user of
     /// invalid or unexpected input.</remarks>
     /// <param name="textInput">The message to display to the user regarding the incorrect input.</param>
-    internal void WrongInput(string textInput)
+    internal static void WrongInput(string textInput)
     {
         Console.Clear();
         DramaticEffectLine("Svensk Bank", 2);
