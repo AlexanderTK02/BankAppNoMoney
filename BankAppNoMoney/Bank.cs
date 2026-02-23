@@ -4,29 +4,42 @@ using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text;
+using System.Data;
+using System.Threading;
 
 namespace BankAppNoMoney;
 /*
- Farzad code-review
- ShowBankMenu() finns redan en evighetsloop, så att anropa metoden igen känns kanske onödigt
+Farzad code-review
 
-I CreateAccount() körs metoden om vid felaktig input, en loop hade nog räckt
+ShowBankMenu() finns redan en evighetsloop, så att anropa metoden igen känns kanske onödigt  
+| FIXAT! |
 
-Villkoren i HandleAccounts() verkar bara kolla upp till val 4, men menyn har fler alternativ
+I CreateAccount() körs metoden om vid felaktig input, en loop hade nog räckt  
+| FIXAT PÅ ETT ANNAT SÄTT! |
+
+Villkoren i HandleAccounts() verkar bara kolla upp till val 4, men menyn har fler alternativ  
+| FIXAT MEN PÅ ANNAT SÄTT, VAL 6 ÄR EXIT |
 
 Thread.Sleep() används, värt att dubbelkolla att rätt namespace är med
+| FIXAT MED NAMESPACE |
 
-Blandning av ReadKey och ReadLine gör input-flödet lite ojämnt
+Blandning av ReadKey och ReadLine gör input-flödet lite ojämnt  
+| VISSA VAL GÅR ÖVER 9 SÅ GÅR INTE ATT HA READKEY MEN SAMTIDIGT SÅ ÄR READKEY SMIDIGARE |
 
 GetAccount() heter i singular men returnerar flera konton, kan vara lite missvisande
+| FIXAT! |
 
 Settern på Accounts är öppen, listan kan kanske ändras oavsiktligt
+| FIXAT, TOG BORT SET VILKET FÖRHINDRAR ÄNDRINGAR UTOM ADD OCH REMOVE ACCOUNT |
 
 I årssimuleringen hamnar ogiltig input direkt i logiken
+| FIXAT MED NÅGRA IF-SATSER |
 
 Random skapas i metoden, osäker om det är bästa stället
+| METODEN ÄR SÅ LITEN ATT DET GÅR BRA. OM JAG SKA UTVECKLA METODEN MER I FRAMTIDEN SÅ ÄNDRAR JAG |
 
 Simuleringen ändrar faktiskt saldot, beror på hur man tänkt att funktionen ska funka
+| DET VAR MENINGEN ATT ÄNDRA SALDOT PÅRIKTIGT |
 
  */
 
@@ -40,7 +53,9 @@ internal class Bank
     /*Konton skapas äen fast man bara skriver Enter, hur du tänkt något specifikt där?*/
     /**/
 
-    internal List<AccountBase> Accounts { get; set; } = new List<AccountBase>();
+    // Fixat alla kommentarer, kommer separera dem om appen utvecklas vidare.
+
+    internal List<AccountBase> Accounts { get; } = new();
 
     public Bank()
     {
@@ -110,12 +125,7 @@ internal class Bank
                     Environment.Exit(0);
                     break;
                 default:
-                    Console.Clear();
-                    Console.WriteLine("Ogiltigt val, försök igen.");
-                    Console.WriteLine("Tryck på någon knapp för att fortsätta");
-                    Console.ReadKey(true);
-                    Console.Clear();
-                    ShowBankMenu();
+                    WrongInput("Ogiltigt val, försök igen.");
                     break;
             }
         }
@@ -199,7 +209,6 @@ internal class Bank
                     break;
                 default:
                     WrongInput("Något gick fel, vänligen försök igen.");
-                    CreateAccount();
                     return;
             }
 
@@ -216,7 +225,6 @@ internal class Bank
         else
         {
             WrongInput("Ogiltigt val, försök igen.");
-            CreateAccount();
             return;
         }
 
@@ -468,7 +476,7 @@ internal class Bank
                     break;
             }
 
-            if (chosenOption < '1' || chosenOption > '4')
+            if (chosenOption < '1' || chosenOption > '5')
             {
                 Console.Clear();
             }
@@ -496,7 +504,7 @@ internal class Bank
         }
     }
 
-    internal List<AccountBase> GetAccount()
+    internal List<AccountBase> GetAccounts()
     {
         return Accounts;
     }
