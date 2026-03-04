@@ -1,11 +1,14 @@
 ﻿using BankAppNoMoney.Accounts;
 using BankAppNoMoney.Base;
+using BankAppNoMoney.Factories;
 using System;
 using System.Collections.Generic;
 using System.Security.Principal;
 using System.Text;
 using System.Data;
 using System.Threading;
+using BankAppNoMoney.Models;
+using BankAppNoMoney.Types;
 
 namespace BankAppNoMoney;
 /*
@@ -70,12 +73,12 @@ internal class Bank
         new IskAccount("Investering", "2001"),
         new UddevallaAccount("Semesterkonto", "3001"),
 
-        new BankAccount("Sparkonto", "1002"),
+        new HighYieldAccount("Sparkonto", "1002"),
         new BankAccount("Matkonto", "1003"),
-        new IskAccount("Fonder", "2002"),
-        new IskAccount("Aktier", "2003"),
+        new HighYieldAccount("Fonder", "2002"),
+        new HighInterestAccount("Aktier", "2003"),
         new UddevallaAccount("Bilkonto", "3002"),
-        new UddevallaAccount("Buffert", "3003"),
+        new HighInterestAccount("Buffert", "3003"),
         new BankAccount("Hushåll", "1004")
     };
 
@@ -130,6 +133,8 @@ internal class Bank
 
     private void CreateAccount()
     {
+        string accountTypeTemp = null!;
+
         DramaticEffectLine("Svensk Bank", 2);
         Console.WriteLine();
         DramaticEffectLine("Vilken typ av konto vill du skapa?", 2);
@@ -137,32 +142,47 @@ internal class Bank
         DramaticEffectLine("1. BankAccount", 2);       // Ränta = 1%
         DramaticEffectLine("2. IskAccount", 2);        // Ränta = 5%
         DramaticEffectLine("3. UddevallaAccount", 2);  // Ränta = 3%
+        DramaticEffectLine("4. HighInterestAccount", 2);
+        DramaticEffectLine("5. HighYieldAccount", 2);
         Console.WriteLine();
-        DramaticEffectLine("4. Tillbaka till huvudmenyn", 2);
+        DramaticEffectLine("6. Tillbaka till huvudmenyn", 2);
 
         char chosenTypeAcc = Console.ReadKey(true).KeyChar;
         Console.WriteLine();
-        
-        if (chosenTypeAcc == '1' || chosenTypeAcc == '2' || chosenTypeAcc == '3' || chosenTypeAcc == '4')
+
+        if (chosenTypeAcc == '1' || chosenTypeAcc == '2' || chosenTypeAcc == '3' || chosenTypeAcc == '4' || chosenTypeAcc == '5' || chosenTypeAcc == '6')
         {
             if (chosenTypeAcc == '1')
             {
                 DramaticEffectLine("Kontotyp: BankAccount", 2);
+                accountTypeTemp = "BankAccount";
             }
             else if (chosenTypeAcc == '2')
             {
                 DramaticEffectLine("Kontotyp: IskAccount", 2);
+                accountTypeTemp = "IskAccount";
             }
             else if (chosenTypeAcc == '3')
             {
                 DramaticEffectLine("Kontotyp: UddevallaAccount", 2);
+                accountTypeTemp = "UddevallaAccount";
             }
             else if (chosenTypeAcc == '4')
+            {
+                DramaticEffectLine("Kontotyp: HighInterestAccount", 2);
+                accountTypeTemp = "HighInterestAccount";
+            }
+            else if (chosenTypeAcc == '5')
+            {
+                DramaticEffectLine("Kontotyp: HighYieldAccount", 2);
+                accountTypeTemp = "HighYieldAccount";
+            }
+            else if (chosenTypeAcc == '6')
             {
                 Console.Clear();
                 return;
             }
-            
+
             Console.WriteLine();
             Console.Write("Konto Namn: ");
             string accountName = Console.ReadLine()!;
@@ -186,31 +206,30 @@ internal class Bank
                 return;
             }
 
-            AccountBase newAccount;
-            string accountTypeTemp;
 
-            switch (chosenTypeAcc) // En switch som har sparat vald kontotyp som variabel och
-                                   // skapar konto baserat på valet efter att info har fyllts i.
+            var accountDetails = new AccountDetails()
             {
-                case '1':
-                    newAccount = new BankAccount(accountName, accountNumber);
-                    accountTypeTemp = "BankAccount";
-                    break;
-                case '2':
-                    newAccount = new IskAccount(accountName, accountNumber);
-                    accountTypeTemp = "IskAccount";
-                    break;
-                case '3':
-                    newAccount = new UddevallaAccount(accountName, accountNumber);
-                    accountTypeTemp = "UddevallaAccount";
-                    break;
-                default:
-                    WrongInput("Något gick fel, vänligen försök igen.");
-                    return;
+                AccountName = accountName,
+                AccountNumber = accountNumber,
+                StartingBalance = 0m,
+                AccountType = chosenTypeAcc == '1' ? AccountType.BankAccount
+                            : chosenTypeAcc == '2' ? AccountType.IskAccount
+                            : chosenTypeAcc == '3' ? AccountType.UdevallaAccount
+                            : chosenTypeAcc == '4' ? AccountType.HighInterestAccount
+                            : AccountType.HighYieldAccount
+            };
+
+            AccountBase newAccount = AccountFactory.CreateAccount(accountDetails);
+
+
+            if (accountDetails.StartingBalance > 0)
+            {
+                newAccount.Deposit(accountDetails.StartingBalance);
             }
 
             AddAccount(newAccount);
 
+            Console.WriteLine();
             DramaticEffectLine("Kontot har skapats!", 2);
             Console.WriteLine();
             DramaticEffectLine($" Konto Typ: {accountTypeTemp}", 2);
@@ -224,7 +243,6 @@ internal class Bank
             WrongInput("Ogiltigt val, försök igen.");
             return;
         }
-
     }
 
     private void RemoveAccount()
@@ -278,14 +296,30 @@ internal class Bank
         }
         else
         {
-            DramaticEffectLine("-----------------------------------------------------------------------------------------", 0);
+            //DramaticEffectLine("-----------------------------------------------------------------------------------------", 0);
+            //foreach (var account in Accounts)
+            //{
+            //    DramaticEffectLine($"| Konto Typ: | {account.GetType().Name} |", 0);
+            //    DramaticEffectLine($"| Konto Namn: {account.AccountName} | Konto Nummer: {account.AccountNumber} | Saldo: {Math.Round(account.Balance(), 2)} SEK |", 0);
+            //    DramaticEffectLine("-----------------------------------------------------------------------------------------", 0);
+            //    Thread.Sleep(150);
+            //}
+
+            DramaticEffectLine("----------------------------------------------------------------------------------", 0);
+            DramaticEffectLine($"| {"Typ",-20} | {"Namn",-20} | {"Nummer",-10} | {"Saldo",-15}     |", 0);
+            DramaticEffectLine("----------------------------------------------------------------------------------", 0);
+
             foreach (var account in Accounts)
             {
-                DramaticEffectLine($"| Konto Typ: | {account.GetType().Name} |", 0);
-                DramaticEffectLine($"| Konto Namn: {account.AccountName} | Konto Nummer: {account.AccountNumber} | Saldo: {Math.Round(account.Balance(), 2)} SEK |", 0);
-                DramaticEffectLine("-----------------------------------------------------------------------------------------", 0);
+                DramaticEffectLine(
+                    $"| {account.GetType().Name,-20} | {account.AccountName,-20} | {account.AccountNumber,-10} | {account.Balance(),-15:F2} SEK |",
+                    0
+                );
+
                 Thread.Sleep(150);
             }
+
+            DramaticEffectLine("----------------------------------------------------------------------------------", 0);
         }
         Console.WriteLine();
         DramaticEffectLine("Tryck på någon knapp för att fortsätta", 2);
@@ -432,15 +466,23 @@ internal class Bank
         }
 
         decimal tempBalance = selectedAccount.Balance();
+        decimal sumOfSim = simDeposit * simTimes;
 
         selectedAccount.SimulateYear(simDeposit, simTimes);
+        decimal sumOfSimInterest = selectedAccount.Balance() - (tempBalance + sumOfSim);
+
         DramaticEffectLine("Svensk Bank", 2);
         Console.WriteLine();
         DramaticEffectLine("Ett år har simulerats!", 2);
-        Console.WriteLine();
-        DramaticEffectLine($"Start Saldo: {Math.Round(tempBalance, 2)} kr", 2);
-        Console.WriteLine();
-        DramaticEffectLine($"Uppdaterad Saldo: {Math.Round(selectedAccount.Balance(), 2)} kr", 2);
+        Console.WriteLine("------------------------------------------------------");
+        DramaticEffectLine($"| Start Saldo:                 |  {Math.Round(tempBalance, 2)} kr", 2);
+        Console.WriteLine("------------------------------------------------------");
+        DramaticEffectLine($"| Total summa av insättningar: |  {sumOfSim}", 2);
+        Console.WriteLine("------------------------------------------------------");
+        DramaticEffectLine($"| Total vinst av ränta:        |  {Math.Round(sumOfSimInterest, 2)}", 2);
+        Console.WriteLine("------------------------------------------------------");
+        DramaticEffectLine($"| Uppdaterad Saldo:            |  {Math.Round(selectedAccount.Balance(), 2)} kr", 2);
+        Console.WriteLine("------------------------------------------------------");
         Console.WriteLine();
     }
 
@@ -448,8 +490,8 @@ internal class Bank
     {
         DramaticEffectLine("Svensk Bank", 2);
         Console.WriteLine();
-        Console.Write("Ange belopp att ta ut:");
-        Console.WriteLine();
+        Console.Write("Ange belopp att ta ut: ");
+
         if (decimal.TryParse(Console.ReadLine(), out decimal withdrawAmount))
         {
             bool transactionWork = selectedAccount.Withdraw(withdrawAmount);
@@ -470,8 +512,7 @@ internal class Bank
     {
         DramaticEffectLine("Svensk Bank", 2);
         Console.WriteLine();
-        Console.Write("Ange belopp att sätta in:");
-        Console.WriteLine();
+        Console.Write("Ange belopp att sätta in: ");
 
         if ((Decimal.TryParse(Console.ReadLine(), out decimal depositAmount)) || depositAmount > 0)
         {
